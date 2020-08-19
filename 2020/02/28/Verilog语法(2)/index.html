@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Verilog语法(2) |  Wendell
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon2.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-Verilog语法(2)" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Verilog语法(2)
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/28/Verilog%E8%AF%AD%E6%B3%95(2)/" class="article-date">
+  <time datetime="2020-02-28T01:28:33.000Z" itemprop="datePublished">2020-02-28</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.7k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">10分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>本篇主要记录Verilog语言一些我之前没有了解到的知识。</p>
+<a id="more"></a>
+
+<ul>
+<li><p>连续赋值语句</p>
+<p><code>assign [drive strength] [delay3] list_of_net_assignments</code> 中括号内为可以省略的，其中驱动强度默认为<code>strong0</code>和<code>strong1</code>。延迟类似于门级延迟</p>
+<p>赋值延迟有三种方式：</p>
+<ul>
+<li><p>普通赋值延迟：<code>assign #delay_time out = i1&amp;i2;</code>，在这个句子中，每当<code>i1</code>或者<code>i2</code>有一个变化时，在经过延迟之后再对<code>out</code>进行赋值，但是注意：进行赋值时取的是实时值，而不是刚发生变化时的值，换句话说，当脉冲时间小于延迟时间，就不产生变化</p>
+</li>
+<li><p>隐式连续赋值延迟：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">wire</span> #<span class="number">10</span> out = i1 &amp; i2;</span><br><span class="line"><span class="comment">//等价于</span></span><br><span class="line"><span class="keyword">wire</span> out;</span><br><span class="line"><span class="keyword">assign</span> #<span class="number">10</span> out = i1 &amp; i2;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>线网声明延迟</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">wire</span> #<span class="number">10</span> out;</span><br><span class="line"><span class="keyword">assign</span> out = i1 &amp; i2;</span><br><span class="line"><span class="comment">//等价于</span></span><br><span class="line"><span class="keyword">wire</span> #<span class="number">10</span> out = i1 &amp; i2;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>门级延迟的使用格式:<code>#(rise_min:rise_typ:rise_max,fall_min:fall_typ:fall_max,turnoff_min:turnoff_typ:turnoff_max)</code></p>
+<p>举例</p>
+<p><code>fulladder#(1:2:3,2:3:4,3:4:5) u0(port map);</code></p>
+</li>
+<li><p>非阻塞赋值<code>&lt;=</code>的赋值逻辑：并行执行，当产生变化时，仿真器将暂存右边的变量，然后当达到仿真时刻时就可以将右侧的值赋值给左侧</p>
+<p>举例</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk)</span><br><span class="line">	a = b;</span><br><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk)</span><br><span class="line">	b = a;</span><br><span class="line">	</span><br><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk)</span><br><span class="line">	a &lt;= b;</span><br><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk)</span><br><span class="line">	b &lt;= a;</span><br></pre></td></tr></table></figure>
+
+<p>如果理解了逻辑，就可以发现第一种模式将产生竞争，最后两个变量会得到相同的值</p>
+<p>第二种模式方可达到交换两变量值的目的</p>
+<blockquote>
+<p>应注意：连续赋值语句使用延时时，到了赋值时刻赋予左值的是右值得实时值，而不是语句书写时的值</p>
+<p>而非阻塞赋值延时时，赋予的是赋值语句书写时的值</p>
+</blockquote>
+</li>
+<li><p>过程语句赋值延迟和连续赋值延迟的问题</p>
+<p>连续语句赋值的问题前面提到了，当使用<code>assign #delay_time commmad</code>的格式时，取的操作值是实时值，而在过程赋值中，延迟方式比较多变</p>
+<ul>
+<li>当使用<code>#delay_time command</code>，则是在延迟之后再执行操作</li>
+<li>当使用<code>a &lt;= #10 in</code>的非阻塞式赋值时或者使用<code>a = #10 in</code>阻塞式赋值时，都是暂存变量，然后再等待10个单位之后，将暂存的值赋予左值，而不是像连续赋值一样实时赋值</li>
+<li>同理可以延伸，在过程赋值语句中<code>a = @(posedge clk) b</code>就是在发生时立即计算b的值暂存，然后等满足条件了（也就是等来了时钟的上升沿）就将值赋给a</li>
+</ul>
+</li>
+<li><p>事件控制: <strong>event</strong></p>
+<p>可以定义一个事件，通过条件控制它的发生，然后根据它的变化执行其他操作，用<code>-&gt;</code>来触发事件，用<code>@</code>来接收事件</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">event</span> receive_data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(last_data_packet)</span><br><span class="line">		-&gt; receive_data;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @ (receive_data)</span><br><span class="line">	data_r = data;</span><br></pre></td></tr></table></figure>
+
+<p>其实这种操作，可以使用类似于<code>flag</code>变量的形式来实现，可以不使用<code>event</code>的用法，可达到同样的目的</p>
+</li>
+<li><p>电平敏感控制：<strong>wait</strong></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span></span><br><span class="line">	<span class="keyword">wait</span>(enable) a &lt;= b;</span><br></pre></td></tr></table></figure>
+
+<p>这种功能经常使用选择分支来实现，而不是例子中的这种</p>
+</li>
+<li><p><code>case</code>和、<code>casex</code>、<code>casez</code></p>
+<ul>
+<li><code>case</code>下的表达是可以使用<code>x</code>和<code>z</code>这两个值的</li>
+<li><code>casex</code>和<code>casez</code>分别表示下面条件的<code>x</code>和<code>z</code>表示无关位，用<code>?</code>来理解</li>
+</ul>
+</li>
+<li><p>顺序块和并行快</p>
+<ul>
+<li>使用<code>begin</code> <code>end</code>的就是顺序块</li>
+<li>使用<code>fork</code> <code>join</code>的是并行块</li>
+<li>顺序块中所有的语句是顺序执行的，除非有时序控制或者非阻塞赋值模块</li>
+<li>并行块中所有语句是并发执行的，并且可以使用时序控制语句来控制执行的顺序，因此，并行块中语句无顺序要求</li>
+</ul>
+</li>
+<li><p>块语句的特点</p>
+<ul>
+<li><p>嵌套块：并行块和顺序块可以混合使用</p>
+</li>
+<li><p>命名块和禁止命名块</p>
+<p>可以给一个块取名，可以在块内定义局部变量，然后可以通过层次名来取其他块中的局部变量</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> top;</span><br><span class="line"></span><br><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">integer</span> i;</span><br><span class="line">	<span class="keyword">begin</span>: block1</span><br><span class="line">		<span class="keyword">integer</span> j; <span class="comment">//可以通过top.block1.j的方式来调用这个变量</span></span><br><span class="line">		...</span><br><span class="line">		...</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">//下面举个嵌套块的例子</span></span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	x = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">fork</span> </span><br><span class="line">		#<span class="number">5</span> y = <span class="number">1</span>;</span><br><span class="line">		#<span class="number">10</span> z = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">join</span></span><br><span class="line">	#<span class="number">20</span> x = &#123;y,z&#125;;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以使用<code>disable block1;</code>的方式禁用<code>block1</code></p>
+</li>
+</ul>
+</li>
+<li><p>生成块：在需要重复操作或者不确定模块中是否需要某个块时，可以使用生成块<code>generate</code>  <code>endgenerate</code></p>
+<ul>
+<li><p>可以使用<code>net reg integer real time realtime event</code></p>
+</li>
+<li><p>使用生成块可以极大地加快工作效率</p>
+</li>
+<li><p>控制生成块生成的循环计算，可以使用<code>genvar</code>声明一个临时变量</p>
+</li>
+<li><p>使用生成块多是结合循环语句、条件语句、case语句来使用的</p>
+</li>
+</ul>
+</li>
+<li><p>理解<code>@</code>符号，<code>@</code>符号可以理解为等待<code>@</code>后面的事件，再执行接下来的操作，比如<code>@(posedge clk) a = b;</code>就是指等到时钟上升沿来时，将b的值赋给a。<code>repeat(2) (@posedge clk);</code> <code>repeat</code>就是指重复两次后面的操作<code>@(posedge clk)</code>，而这个操作又是指等待上升沿到来时执行其后的语句，而这里的语句是空语句，所以这句话最终起到的作用就是等待两个时钟周期</p>
+</li>
+<li><p>task和function</p>
+<ul>
+<li><p>区别：task可以理解为普通的Verilog代码，可以包含时序逻辑，function只可以是纯组合逻辑；task可以调用其他task和function，function只能调用function；task可以有input、inout、output，function必须有一个及以上的input，不能有输出，但是可以返回一个值</p>
+</li>
+<li><p>task：在同一个模块中调用同一个task是对同一块地址进行操作，所以容易出错，使用<code>automatic</code>命令可以自动分配内存。<code>task automatic task_name;</code>，调用的使用格式和门语句还是很像的，port map的顺序和task中定义的顺序是一致的</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">task</span> <span class="keyword">automatic</span> task1;</span><br><span class="line"><span class="keyword">input</span> [<span class="number">3</span>:<span class="number">0</span>] a;</span><br><span class="line"><span class="keyword">input</span> [<span class="number">3</span>:<span class="number">0</span>] b;</span><br><span class="line"><span class="keyword">output</span> [<span class="number">4</span>:<span class="number">0</span>] out;</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	#<span class="number">5</span> out = a + b;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">endtask</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//调用</span></span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line">	taks1;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>function： function的使用方式和task基本是一致的，需要注意的是，function在定义时，隐式定义了一个寄存器变量，用来存放函数返回的值，这个值在函数被调用的地方被使用。同样使用<code>automatic</code>参数，可以为多次被调用的同一个函数开辟多个空间，避免错误，注意到使用递归函数的时候，就需要用到这个</p>
+</li>
+<li><p>函数还有其他的一些定义方法，比如<code>function integer cal(input [3:0] a);</code>可以返回一个常数；<code>function signed [63:0] cal(input [7:0] a);</code>可以返回一个位宽为64有符号数</p>
+</li>
+</ul>
+</li>
+<li><p><code>assign</code>和<code>deassign</code>：过程连续赋值，在过程语句里使用<code>assign</code>，在这个模块再次被触发之前，变量暂时被<code>assign</code>覆盖，然后等到<code>deassign</code>取消覆盖，得到它原来的值，这种方式十分糟糕，不建议使用</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span> @ (<span class="keyword">negedge</span> clk)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	q &lt;= d;</span><br><span class="line">	q_n &lt;= ~d;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">always</span> @ (reset)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(reset) <span class="keyword">begin</span> <span class="comment">//暂时覆盖</span></span><br><span class="line">		<span class="keyword">assign</span> q &lt;= <span class="number">1'b0</span>;</span><br><span class="line">		<span class="keyword">assign</span> q_n &lt;= <span class="number">1'b1</span>;</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">begin</span> <span class="comment">//取消覆盖</span></span><br><span class="line">		<span class="keyword">deassign</span> q;</span><br><span class="line">		<span class="keyword">deassign</span> q_n;</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>force</code>和<code>release</code>：也是强制赋值，使用在仿真模块中，强制改变一个线网或者寄存器的值</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">	#<span class="number">50</span> <span class="keyword">force</span> q = a &amp; b;</span><br><span class="line">	#<span class="number">100</span> relaese q;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>例化模块改变参数的另一种方法：例化的时候改变参数十分常见，前面也介绍了一种方法，通过<code>#(.id(id))</code>的方式。<code>defparam</code>也可以实现相同的功能，但是这种代码是十分糟糕的形式，不建议使用</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">defparam</span> u0<span class="variable">.id</span> = <span class="number">1</span>, u1<span class="variable">.id</span> = <span class="number">2</span>;</span><br><span class="line">cal u0(port_map);</span><br><span class="line">cal u1(port_map);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>`ifdef `ifndef `elsif `else `endif 这些语句和C语言的条件编译十分相似，都是找是否定义了相应的文本宏，文本宏的定义方式是`define ，上面的条件编译语句不允许使用逻辑运算</p>
+</li>
+<li><p>条件执行语句：只有在系统添加了相应的标志时，才会运行，否则都不运行</p>
+<ul>
+<li><p><code>$test$plusargs</code> ，可以指定<code>+DISPLAY_VAR</code>选项在程序运行时设置标志</p>
+  <figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> test;</span><br><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">    	<span class="keyword">if</span>($test$plusargs(<span class="string">"DISPLAY_VAR"</span>)) <span class="comment">//只有添加了这个标志才显示</span></span><br><span class="line"> 	 		<span class="built_in">$display</span>(<span class="string">"..."</span>);</span><br><span class="line">	  	<span class="keyword">else</span></span><br><span class="line"> 	 		$dispaly(<span class="string">"///"</span>);</span><br><span class="line">	  <span class="keyword">end</span></span><br><span class="line">	  </span><br><span class="line">	  <span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>$value$plusargs</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">11</span>:<span class="number">0</span>] string_a;</span><br><span class="line"><span class="keyword">integer</span> period = <span class="number">10</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">$value$plusargs</span>(<span class="string">"testname=s%"</span>,string_a))</span><br><span class="line">		<span class="built_in">$readmemh</span>(string_a,vectors);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="built_in">$display</span>(<span class="string">"error"</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>($vale$plusargs(<span class="string">"clk_t=d%"</span>,period))</span><br><span class="line">		<span class="keyword">forever</span> <span class="variable">#(period/2)</span> clk = ~clk;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		$dispaly(<span class="string">"error"</span>);</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+
+<p>要启用上述选项，用带<code>+testname = test1.vec  +clk_t = 10 testname = &quot;test1.vec&quot; period = 10</code>的命令行来启动仿真器</p>
+</li>
+</ul>
+</li>
+<li><p>时间尺度：<code>timescale 1ns/1ps</code>，这个语句在仿真时使用，但是并没有理解它的意思，其意义是时间测量单位\延迟的时间单位，只能写1、10、100，通俗的说就是参考时间单位\精度；</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">`<span class="meta-keyword">timescale</span> 100ns/1ns</span></span><br><span class="line">#<span class="number">5</span> <span class="comment">//延迟500ns</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>文件操作</p>
+<ul>
+<li><p>打开文件：<code>fopen</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">integer</span> handle1 , handle2, handle3;</span><br><span class="line"><span class="comment">//标准输出是打开的：decription = 32'h0000_0001;</span></span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	handle1 = <span class="built_in">$fopen</span>(<span class="string">"file1.out"</span>);<span class="comment">//handle1 = 32'h0000_0002;</span></span><br><span class="line">	handle2 = <span class="built_in">$fopen</span>(<span class="string">"file2.out"</span>);<span class="comment">//handle1 = 32'h0000_0004;</span></span><br><span class="line">	handle3 = <span class="built_in">$fopen</span>(<span class="string">"file3.out"</span>);<span class="comment">//handle1 = 32'h0000_0008;</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>写文件：<code>fdispaly</code> <code>fmonitor</code> <code>fwrite</code> <code>fstrobe</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="keyword">integer</span> desc1, desc2;<span class="comment">//定义两个文件描述符</span></span><br><span class="line"><span class="keyword">initial</span></span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	des1 = handle1 | <span class="number">1</span>;</span><br><span class="line">	$fdispaly(dsc1,<span class="string">"dispaly1"</span>);<span class="comment">//同时在file1和标准输出里写文件</span></span><br><span class="line">	</span><br><span class="line">	desc2 = handle3;</span><br><span class="line">	$fdispaly(desc2,<span class="string">"dispaly2"</span>);<span class="comment">//在file3里写文件</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关闭文件：<code>fclose</code></p>
+<p>关闭之后的文件就不可以写了，重新打开可能会获得另外一个通道</p>
+</li>
+</ul>
+</li>
+<li><p>显示层次的<code>m%</code>，使用输出时后面不用附加参数</p>
+</li>
+<li><p>在与<code>display</code>同时执行的语句中，两者执行的顺序并不明确，使用<code>strobe</code>可以确保是先进行运算，再显示</p>
+</li>
+<li><p>随机数生成函数</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$random</span>; </span><br><span class="line"><span class="built_in">$random</span>(seed);</span><br><span class="line"><span class="built_in">$random</span> % <span class="number">60</span>; <span class="comment">//-59到59</span></span><br><span class="line">&#123;<span class="built_in">$random</span>&#125; % <span class="number">60</span>; <span class="comment">//0到59</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用文件初始化存储器 <code>readmemb</code>和<code>readmemh</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$readmemb</span>(<span class="string">"&lt;filename&gt;"</span>,&lt;memory_name&gt;,[&lt;start_addr&gt;],[&lt;finish_addr&gt;]);</span><br><span class="line"><span class="comment">//$readmemh使用方法一样</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> top;</span><br><span class="line"></span><br><span class="line"><span class="keyword">reg</span>[<span class="number">7</span>:<span class="number">0</span>] memory_a [<span class="number">0</span>:<span class="number">7</span>];<span class="comment">//8 x 8存储器</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">	<span class="built_in">$readmemb</span>(<span class="string">"init.dat"</span>,memory_a);</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+
+<p>将<code>&quot;init.dat&quot;</code>文件中的内容写入到存储器中</p>
+<p>文件里的格式如下</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@<span class="number">002</span> <span class="comment">//使用@表示文件的写入位置，使用十六进制表明，数据使用空格分开，未初始化默认为x</span></span><br><span class="line"><span class="number">00000000</span> <span class="number">00000001</span></span><br><span class="line"><span class="number">00010101</span> <span class="number">10010110</span> </span><br><span class="line"></span><br><span class="line">@<span class="number">006</span></span><br><span class="line"><span class="number">00001011</span> <span class="number">01111010</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>VCD文件转储：使用例子来说明转储文件的使用方法，主要是讲仿真信息，如输出，波形等信息转储到文件中</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">initial</span> </span><br><span class="line">	<span class="built_in">$dumpfile</span>(<span class="string">"file1.dmp"</span>);<span class="comment">//将仿真信息转储到file1.dmp中</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line">	<span class="built_in">$dumpvars</span>; <span class="comment">//不指定范围，则为转储所有变量信息</span></span><br><span class="line"><span class="keyword">initial</span></span><br><span class="line">	<span class="built_in">$dumpvars</span>(<span class="number">2</span>,top<span class="variable">.m2</span>);<span class="comment">//表示转储top.m2下两层的变量信息，使用0就是转储top.m2下所有变量的信息</span></span><br><span class="line">	</span><br><span class="line"><span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">	<span class="built_in">$dumpon</span>; <span class="comment">//开始转储</span></span><br><span class="line">	#<span class="number">1000000</span> <span class="built_in">$dumpoff</span>;<span class="comment">//仿真一段时间后停止</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line">    $dumpfall;<span class="comment">//生成一个检测点，转储所有VCD变量的当前值(执行的时刻，在这里就是仿真开始处)</span></span><br></pre></td></tr></table></figure>
+
+<p><code>.vcd</code>格式是任何仿真器默认可以打开的，<code>.fsdb</code>也是较为常用的一种存储波形的文件格式</p>
+</li>
+</ul>
+<p><font size=2>主要参考《Verilog+HDL数字设计与综合（第二版）》</font></p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2020/02/28/Verilog%E8%AF%AD%E6%B3%95(2)/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Verilog/" rel="tag">Verilog</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/03/01/Verilog%E8%AF%AD%E6%B3%95(3)/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Verilog语法(3)
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/13/%E7%BA%BF%E6%80%A7%E8%A1%A8/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">线性表</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2019-2020
+        Wendell
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Wendell"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/WarlockWendell" target="_blank" rel="noopener">github</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['面朝大海，春暖花开','',''],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: false,
+    backSpeed: 100000000000,
+    showCursor: false
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

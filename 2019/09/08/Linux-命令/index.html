@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Linux命令 |  Wendell
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon2.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-Linux-命令" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Linux命令
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2019/09/08/Linux-%E5%91%BD%E4%BB%A4/" class="article-date">
+  <time datetime="2019-09-08T07:40:25.000Z" itemprop="datePublished">2019-09-08</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.5k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">13分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>Linux中命令比较多，本篇博客记录在开发中常用的简单的Linux命令</p>
+<a id="more"></a>
+
+<h2 id="1-Linux-命令格式"><a href="#1-Linux-命令格式" class="headerlink" title="1.Linux 命令格式"></a>1.Linux 命令格式</h2><p><strong><em>command [-options] [parameter1] …</em></strong></p>
+<ul>
+<li><p>[] 表示是可选的，在命令中可以不用</p>
+</li>
+<li><p>options 表示命令的选项，可以按需执行一些操作</p>
+</li>
+<li><p>parameter 表示命令的参数，比如pathname等</p>
+</li>
+<li><p>对于不熟悉的命令，可以使用<code>man</code>命令，或者<code>--help</code>参数查看帮助手册的部分内容，在这个帮助文档里可以看到这些命令的功能和参数。但是注意到并不是所有的命令都有<code>--help</code>选项，但是所有的命令都可以在man手册中看到</p>
+<blockquote>
+<p>man手册中有命令和一些函数，这样就不可避免的有一些命令和函数是同名的，如此就需要使用不同的参数来查找man手册。可以使用 <strong><em>man [number] [name]</em></strong> 的形式来区分，比如查找命令使用数字1（缺省值），数字3表示库函数</p>
+</blockquote>
+</li>
+<li><p>使用<code>tab</code>键可以自动补全命令，这对Linux的使用来说十分方便</p>
+</li>
+<li><p>使用方向键<code>↑</code>可以按序查找之前使用过的命令</p>
+</li>
+<li><p>使用<strong><em>history</em></strong>命令可以查看最近使用的多条命令</p>
+</li>
+<li><p><code>alias</code>  可以查看命令的别名</p>
+</li>
+</ul>
+<hr>
+<h2 id="2-Linux常用命令"><a href="#2-Linux常用命令" class="headerlink" title="2.Linux常用命令"></a>2.Linux常用命令</h2><h3 id="2-1-文件管理命令"><a href="#2-1-文件管理命令" class="headerlink" title="2.1 文件管理命令"></a>2.1 文件管理命令</h3><h4 id="2-1-1-ls"><a href="#2-1-1-ls" class="headerlink" title="2.1.1 ls"></a>2.1.1 ls</h4><p>用来查看命令（Windows中的dir命令）</p>
+<ul>
+<li><p><code>-a</code>: 用来查看包括隐藏目录的所有目录（以<code>.</code>开头的文件名、路径名就是隐藏的）</p>
+</li>
+<li><p><code>-l</code>: 就是以列表的方式查看详细目录，包括目录的类型、目录的子目录个数（普通文件的硬链接个数）、所属、大小、最后修改时间</p>
+</li>
+<li><p><code>-h</code>: 以人性化的方式查看文件的详细目录，更加具体地说是更人性化显示文件的大小（使用时需要配合<code>-l</code>使用）</p>
+</li>
+<li><p>通配符：</p>
+<ul>
+<li>* : 可以替代所有的字符，字符数不限</li>
+<li>? : 可以替代一个字符</li>
+<li>[abc] : 可以替代a、b、c中任意一个字符</li>
+<li>[a-f] : 可以替代a到f中任意一个字符</li>
+</ul>
+<blockquote>
+<p>注意当输入<code>a-f</code>时并不代表通配符</p>
+<p>当需要查找含有<em>的目录名时，可以使用转义字符\ ，当然很多命令的\</em> 都是使用转义字符的</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="2-1-2-输出重定向：-gt"><a href="#2-1-2-输出重定向：-gt" class="headerlink" title="2.1.2 输出重定向：&gt;"></a>2.1.2 输出重定向：&gt;</h4><p>举例说明输出重定向的作用</p>
+<p><strong><em>ls &gt; test.txt</em></strong></p>
+<p>表示将原来输出到屏幕上的输出到<code>test.txt</code>文件中，若不存在这个文件，则创建这个文件；若已经存在这个文件，则将删掉原先内容再重新输入内容</p>
+<p><strong><em>ls &gt;&gt; test.txt</em></strong></p>
+<p>使用这个命令，就可以在已经存在的文件后面追加输入内容</p>
+<h4 id="2-1-3-显示命令"><a href="#2-1-3-显示命令" class="headerlink" title="2.1.3 显示命令"></a>2.1.3 显示命令</h4><ul>
+<li><code>cat</code>：查看文件内容</li>
+<li><code>more</code>:分屏显示文件内容，使用空格翻页、使用q退出</li>
+<li><code>less</code>:分屏显示文件内容，功能更为齐全，可以上下翻页</li>
+</ul>
+<h4 id="2-1-4-管道命令"><a href="#2-1-4-管道命令" class="headerlink" title="2.1.4 管道命令: |"></a>2.1.4 管道命令: |</h4><p><strong>一个命令的输入是另一个命令的输出</strong></p>
+<p>举例说明</p>
+<p><strong><em>ls | grep std</em></strong></p>
+<p>将ls命令的输出放在管道的一端作为grep命令的输入，grep命令是查找关键字（文本搜索）命令。那么这个命令的作用就是将在ls的输出内容中查找含有std的项</p>
+<h4 id="2-1-5-清屏：clear"><a href="#2-1-5-清屏：clear" class="headerlink" title="2.1.5 清屏：clear"></a>2.1.5 清屏：clear</h4><p>使用<code>clear</code>命令就可以清除屏幕上的内容（Windows中是cls），但是注意并不是指删除，向上翻还是可以看到上面输出的内容的。可以使用快捷键<code>ctrl</code> <code>+</code> <code>L</code> 来替代这个命令</p>
+<h4 id="2-1-6-切换工作目录：cd"><a href="#2-1-6-切换工作目录：cd" class="headerlink" title="2.1.6 切换工作目录：cd"></a>2.1.6 切换工作目录：cd</h4><p><strong><em>cd pathname</em></strong> : 切换到<code>pathname</code>表示的目录，表示方法可以用绝对路径，也可以使用相对路径</p>
+<ul>
+<li><code>~</code>：表示家目录</li>
+<li><code>-</code>：上一次的目录</li>
+</ul>
+<h4 id="2-1-7-查看当前工作目录：pwd"><a href="#2-1-7-查看当前工作目录：pwd" class="headerlink" title="2.1.7 查看当前工作目录：pwd"></a>2.1.7 查看当前工作目录：pwd</h4><p>输入<strong><em>pwd</em></strong>命令就可以看到自己当前所在的工作目录</p>
+<h4 id="2-1-8-创建目录：mkdir"><a href="#2-1-8-创建目录：mkdir" class="headerlink" title="2.1.8 创建目录：mkdir"></a>2.1.8 创建目录：mkdir</h4><p>相当于Windows中的新建文件夹操作</p>
+<ul>
+<li><code>-p</code>：嵌套创建文件夹</li>
+</ul>
+<h4 id="2-1-9-删除目录：rmdir"><a href="#2-1-9-删除目录：rmdir" class="headerlink" title="2.1.9 删除目录：rmdir"></a>2.1.9 删除目录：rmdir</h4><p>就是字面意思，删除一个目录</p>
+<ul>
+<li>只能删除空目录</li>
+<li><code>-p</code>：连级删除空目录</li>
+</ul>
+<h4 id="2-1-10-删除命令：rm"><a href="#2-1-10-删除命令：rm" class="headerlink" title="2.1.10 删除命令：rm"></a>2.1.10 删除命令：rm</h4><p><strong><em>rm [option] pathname</em></strong></p>
+<ul>
+<li><code>-r</code>：删除目录</li>
+<li><code>-f</code>：强制删除，目录</li>
+<li><code>-i</code>：询问是否删除</li>
+</ul>
+<h4 id="2-1-11-创建链接：ln"><a href="#2-1-11-创建链接：ln" class="headerlink" title="2.1.11 创建链接：ln"></a>2.1.11 创建链接：ln</h4><p>可以理解为Windows中的创建快捷方式，Linux中的链接分为软链接和硬链接</p>
+<p><strong><em>ln 源文件 链接文件</em></strong></p>
+<p><strong><em>ln -s 源文件 链接文件</em></strong></p>
+<ul>
+<li>软链接并不占用磁盘空间，当源文件删除之后则软链接失效</li>
+<li>硬链接：更像是将文件copy了一份，两个文件占据<strong>相同的空间</strong>，但是修改其中一个文件时，另一个文件也会被同步修改，当删除源文件，硬链接文件还在。硬链接只能链接普通文件，不能链接目录</li>
+</ul>
+<h4 id="2-1-12-查看或合并文本内容：cat"><a href="#2-1-12-查看或合并文本内容：cat" class="headerlink" title="2.1.12 查看或合并文本内容：cat"></a>2.1.12 查看或合并文本内容：cat</h4><p><strong><em>cat file</em></strong>  ：查看文件内容</p>
+<p><strong><em>cat file1 file2 &gt; file3</em></strong> ：使用重定向命令，将<code>file1</code> <code>file2</code> 文件中的内容重定向合并到文件<code>file3</code> 中</p>
+<h4 id="2-1-13-文本搜索：grep"><a href="#2-1-13-文本搜索：grep" class="headerlink" title="2.1.13 文本搜索：grep"></a>2.1.13 文本搜索：grep</h4><p><strong><em>grep [options] 搜索文本 filename</em></strong></p>
+<ul>
+<li><p><code>-v</code>：求反，显示不包括匹配文本的所有行</p>
+</li>
+<li><p><code>-n</code> ：显示匹配行和行号</p>
+</li>
+<li><p><code>-i</code> ：忽略大小写</p>
+</li>
+<li><p>搜索内容可以是正则表达式，下面是<code>grep</code> 命令常用的正则表达式</p>
+<ul>
+<li><code>^a</code> ：查找以<code>a</code>开头的行</li>
+<li><code>ke$</code>：查找以<code>ke</code>结尾的行</li>
+<li><code>[]</code>：匹配方括号中的一个字符的行，比如 <code>[Ss]in</code> 表示查找<code>Sin</code> 或者<code>sin</code></li>
+<li><code>.</code>：匹配一个字符，相当于2.1.1中提到的通配符的<code>?</code></li>
+</ul>
+</li>
+<li><p>搜索文本内容可以使用引号或双引号</p>
+</li>
+</ul>
+<h4 id="2-1-14-查找文件：find"><a href="#2-1-14-查找文件：find" class="headerlink" title="2.1.14 查找文件：find"></a>2.1.14 查找文件：find</h4><p><strong><em>find pathname options expression</em></strong></p>
+<ul>
+<li><code>-name</code> ：按照名称查找，可以使用通配符     <code>find ./ -name *.c</code> 查找当前目录下后缀为<code>.c</code>的文件</li>
+<li><code>-size</code> ：按照大小查找，<code>find ./ -size 2M</code> 查找当前目录下大小为2M的文件，<code>find ./ -size +4k -size -2M</code> 查找当前目录下大小大于4k、小于2M 的文件</li>
+<li><code>-perm</code> ：按照权限查找，<code>find ./ -perm 0777</code> 查找当前目录下权限为777的文件或目录（前面的0表示8进制）</li>
+<li><code>-type</code>：按照文件类型查找<ul>
+<li><code>f</code> : 普通文件</li>
+<li><code>d</code>：目录</li>
+<li><code>b</code>：块设备</li>
+<li><code>c</code>：字符设备</li>
+<li><code>s</code>：socket</li>
+<li><code>p</code>：管道</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-1-15-复制文件：cp"><a href="#2-1-15-复制文件：cp" class="headerlink" title="2.1.15 复制文件：cp"></a>2.1.15 复制文件：cp</h4><p><strong><em>cp 源文件 目标文件</em></strong></p>
+<ul>
+<li><code>-r</code>：拷贝文件夹</li>
+<li><code>-i</code>：有提示</li>
+<li><code>-v</code>：显示拷贝进度，拷贝大文件时可用</li>
+<li><code>-a</code>：拷贝所有信息，原封不动的拷贝一份，包括文件属性</li>
+</ul>
+<h4 id="2-1-16-移动文件：mv"><a href="#2-1-16-移动文件：mv" class="headerlink" title="2.1.16 移动文件：mv"></a>2.1.16 移动文件：mv</h4><p><strong><em>mv 源文件 目标文件</em></strong></p>
+<ul>
+<li><code>-f</code>：有覆盖不提示</li>
+<li><code>-i</code>：有提示</li>
+<li><code>-v</code> : 显示移动进度</li>
+</ul>
+<blockquote>
+<p>目标文件若是一个路径就是移动，也可以指定一个名字，可以改名</p>
+</blockquote>
+<h4 id="2-1-17-查看文件属性：file"><a href="#2-1-17-查看文件属性：file" class="headerlink" title="2.1.17 查看文件属性：file"></a>2.1.17 查看文件属性：file</h4><p>使用此命令可以查看文件属性</p>
+<h4 id="2-1-18-归档管理：tar"><a href="#2-1-18-归档管理：tar" class="headerlink" title="2.1.18 归档管理：tar"></a>2.1.18 归档管理：tar</h4><ul>
+<li><code>-c</code>：创建打包文件</li>
+<li><code>-v</code>：显示进度</li>
+<li><code>-f</code>：后面跟文件名，使用时要放在后面</li>
+<li><code>-x</code>：解包</li>
+<li><code>-C</code>：解包到指定路劲时需要加这个选项</li>
+<li><code>-z</code>：同时压缩或者解压</li>
+</ul>
+<p>常见使用方法</p>
+<ul>
+<li><code>tar -cvf files file1 file1</code> 将<code>file1</code> <code>file2</code> 打包到<code>files</code>文件中</li>
+<li><code>tar -xvf files</code> 将<code>files</code>解包到当前路径</li>
+<li><code>tar -xvf -C files ../c/</code> 将<code>files</code>解包到上一级目录中的<code>c</code>目录中</li>
+</ul>
+<blockquote>
+<p>查看目录的大小 <strong><em>du pathname -h</em></strong></p>
+</blockquote>
+<h4 id="2-1-19-文件压缩工具：gzip（bzip2"><a href="#2-1-19-文件压缩工具：gzip（bzip2" class="headerlink" title="2.1.19 文件压缩工具：gzip（bzip2)"></a>2.1.19 文件压缩工具：gzip（bzip2)</h4><p>对于已经打包的文件进行压缩，也可以解压<code>.gz</code>（<code>.bz2</code>)压缩包</p>
+<p><strong><em>gzip pathname</em></strong> ：在当前路径压缩已经打包文件</p>
+<ul>
+<li><code>-d</code> （<code>bzip2</code>是<code>-z</code>)：解压，<strong><em>gzip -d pathname</em></strong></li>
+<li><code>-r</code>：递归压缩，压缩目录，使用此选项时要指定生成的压缩包的名称</li>
+</ul>
+<blockquote>
+<p>注意：打包和压缩可以合并一起使用，<code>tar</code>命令加上<code>-z</code>选项就是压缩，同理也可以解压解包一起执行</p>
+<p>对于<code>bzip2</code> 使用的选项是<code>-j</code></p>
+<p>所以实际上常用的是</p>
+<p>压缩：<code>tar -zcvf xxx.tar.gz file1 file2...</code>    </p>
+<p>​            <code>tar -jcvf xxx.tar.bz2 file1 file2 ...</code></p>
+<p>解压：<code>tar -zxvf xxx.tar.gz [-C pathname]</code>  </p>
+<p>​            <code>tar -jxvf xxx.tar.bz2 [-C pathname]</code></p>
+</blockquote>
+<h4 id="2-1-20-压缩解压缩工具：zip-unzip-rar"><a href="#2-1-20-压缩解压缩工具：zip-unzip-rar" class="headerlink" title="2.1.20 压缩解压缩工具：zip unzip rar"></a>2.1.20 压缩解压缩工具：zip unzip rar</h4><p><strong><em>zip -r files file1 file2</em></strong> ：压缩</p>
+<p><strong><em>unzip -d pathname files</em></strong>：解压</p>
+<p><strong><em>rar -a file</em></strong> ：压缩</p>
+<p><strong><em>rar -x file</em></strong> ：解压</p>
+<h4 id="2-1-21-which"><a href="#2-1-21-which" class="headerlink" title="2.1.21 which"></a>2.1.21 which</h4><p>此命令用来查看命令的可执行程序是放在哪一个文件夹下的</p>
+<p><strong><em>which command</em></strong></p>
+<h4 id="2-2-22-echo"><a href="#2-2-22-echo" class="headerlink" title="2.2.22 echo"></a>2.2.22 echo</h4><p>输出命令，比如</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"HELLO"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="2-2-用户、权限管理"><a href="#2-2-用户、权限管理" class="headerlink" title="2.2 用户、权限管理"></a>2.2 用户、权限管理</h3><p>Linux十分适合多用户使用，Linux中有很好的用户和权限管理工具</p>
+<h4 id="2-2-1-查看当前用户：whoami-、who、w"><a href="#2-2-1-查看当前用户：whoami-、who、w" class="headerlink" title="2.2.1 查看当前用户：whoami 、who、w"></a>2.2.1 查看当前用户：whoami 、who、w</h4><p>输入这三个命令都可以查看用户信息，一个命令比一个命令详细</p>
+<h4 id="2-2-2-退出登录账号：exit"><a href="#2-2-2-退出登录账号：exit" class="headerlink" title="2.2.2 退出登录账号：exit"></a>2.2.2 退出登录账号：exit</h4><p>退出当前登录账号至上一个登录账号，若没有上一个登录账号，则退出终端</p>
+<h4 id="2-2-3-切换用户：su"><a href="#2-2-3-切换用户：su" class="headerlink" title="2.2.3 切换用户：su"></a>2.2.3 切换用户：su</h4><p><strong><em>su username</em></strong></p>
+<ul>
+<li>如果是切换到root用户，只需要输入<code>su</code>，因为一个Linux系统只允许有一个root用户</li>
+</ul>
+<h4 id="2-2-4-添加、删除组：groupadd、groupdel"><a href="#2-2-4-添加、删除组：groupadd、groupdel" class="headerlink" title="2.2.4 添加、删除组：groupadd、groupdel"></a>2.2.4 添加、删除组：groupadd、groupdel</h4><ul>
+<li><code>groupadd name</code>：添加组，名称为name</li>
+<li><code>groupdel name</code>：删除名称为name的组，有用户就不可以删除</li>
+<li><code>cat /etc/group</code>：查看用户组</li>
+</ul>
+<blockquote>
+<p>创建一个用户时，熊默认创建一个用户组，组的名字与用户的名字相同</p>
+</blockquote>
+<h4 id="2-2-5-修改用户所在组：usermod"><a href="#2-2-5-修改用户所在组：usermod" class="headerlink" title="2.2.5 修改用户所在组：usermod"></a>2.2.5 修改用户所在组：usermod</h4><p><strong><em>usermod -g groupname username</em></strong></p>
+<p>将username用户改到groupname组</p>
+<blockquote>
+<p>可以使用<code>cat /etc/passwd</code> 查看用户信息，下面是截取的一些用户信息</p>
+<p>​    <code>wendell:x:1000:1000:,,,:/home/wendell:/bin/bash</code></p>
+<p>其中wendell代表用户名，第一个1000代表用户id，第二个1000代表用户所在组的id</p>
+</blockquote>
+<h4 id="2-2-6-添加、删除用户：useradd、userdel"><a href="#2-2-6-添加、删除用户：useradd、userdel" class="headerlink" title="2.2.6 添加、删除用户：useradd、userdel"></a>2.2.6 添加、删除用户：useradd、userdel</h4><p>useradd：</p>
+<ul>
+<li><code>-d</code>：指定创建用户的主目录，如果不使用这个，则系统自动在<code>/home/</code>目录下创建与用户名同名的主目录</li>
+<li><code>-m</code>：自动创建主目录</li>
+<li><code>-g</code>：指定组名称</li>
+<li><code>-s</code> ：指定一个shell，如<code>/bin/bash</code></li>
+</ul>
+<blockquote>
+<p>每个用户必须有一个主目录</p>
+<p>adduser是一个脚本命令，使用起来简单很多，但是这个脚本不能创建带有大小字母的用户名</p>
+</blockquote>
+<p>userdel：</p>
+<ul>
+<li><code>-r</code>：在删除用户时同时删除主目录</li>
+</ul>
+<h4 id="2-2-7-设定用户密码：passwd"><a href="#2-2-7-设定用户密码：passwd" class="headerlink" title="2.2.7 设定用户密码：passwd"></a>2.2.7 设定用户密码：passwd</h4><p><strong><em>passwd username</em></strong></p>
+<h4 id="2-2-8-修改文件权限：chmod"><a href="#2-2-8-修改文件权限：chmod" class="headerlink" title="2.2.8 修改文件权限：chmod"></a>2.2.8 修改文件权限：chmod</h4><p><strong><em>chmod u/g/o/a+/-rwx file</em></strong></p>
+<p><strong><em>chmod u/g/o/a=rwx file</em></strong></p>
+<p><strong><em>chmod 三位数字代码 file</em></strong></p>
+<blockquote>
+<p>数字法也可以使用加减号来操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chmod -001 filename</span><br><span class="line">chmod +001 filename</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="2-2-9-修改文件所属：chown、chgrp"><a href="#2-2-9-修改文件所属：chown、chgrp" class="headerlink" title="2.2.9 修改文件所属：chown、chgrp"></a>2.2.9 修改文件所属：chown、chgrp</h4><p><strong><em>chown username file</em></strong></p>
+<p><strong><em>chgrp groupname file</em></strong></p>
+<hr>
+<h3 id="2-3-系统管理"><a href="#2-3-系统管理" class="headerlink" title="2.3. 系统管理"></a>2.3. 系统管理</h3><h4 id="2-3-1-查看系统日历：cal"><a href="#2-3-1-查看系统日历：cal" class="headerlink" title="2.3.1 查看系统日历：cal"></a>2.3.1 查看系统日历：cal</h4><ul>
+<li><code>cal</code>：可查看日历，可指定具体地日期</li>
+<li><code>date</code>：可以显示现在的时间</li>
+</ul>
+<h4 id="2-3-2-静态查看进程信息：ps"><a href="#2-3-2-静态查看进程信息：ps" class="headerlink" title="2.3.2 静态查看进程信息：ps"></a>2.3.2 静态查看进程信息：ps</h4><p>可以理解成Windows中的人物管理器，进程卡死时可能会用到这个命令</p>
+<p>这个命令的选项可以不加<code>-</code>，也可以加<code>-</code></p>
+<ul>
+<li><code>-a</code>：显示终端上运行的所有进程，包括其他用户运行的进程</li>
+<li><code>-u</code>：显示进程的详细状态</li>
+<li><code>-x</code>：显示没有控制终端的进程</li>
+<li><code>-w</code>：显示加宽，以便显示更多的信息</li>
+<li><code>-r</code>：只显示正在运行的进程</li>
+</ul>
+<p>下面是使用<code>ps -aux</code> 后显示的信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root         1  0.0  0.2  37592  5592 ?        Ss    2019   0:12 &#x2F;sbin&#x2F;init splash</span><br></pre></td></tr></table></figure>
+
+<p>字面意思，第一个root表示这个进程是root用户执行的；PID表示进程号；CPU表示CPU占用率；MEM表示内存占用率；VSZ表示占用的虚拟内存的大小，申请内存值；RSS表示占用的内存大小，实际占用的物理内存；TTY表示终端的次要装置号码；STAT表示进程的状态；START表示进程开始时间；TIME表示执行的时间；COMMAND表示执行的指令。</p>
+<p>下面对表示状态的字母进行一个解读：</p>
+<ul>
+<li>D：不可中断的静止</li>
+<li>R：正在执行</li>
+<li>S：静止状态</li>
+<li>T：暂停执行</li>
+<li>Z：不存在但暂时无法消除</li>
+<li>W：没有足够的内存分页可以分配</li>
+<li>&lt;：高优先序的进程</li>
+<li>N：低优先序的进程</li>
+<li>L：有内存分页分配并锁在内存中</li>
+</ul>
+<h4 id="2-3-3-动态显示进程：top"><a href="#2-3-3-动态显示进程：top" class="headerlink" title="2.3.3 动态显示进程：top"></a>2.3.3 动态显示进程：top</h4><p>动态显示进程，<code>q</code> 退出显示</p>
+<h4 id="2-3-4-终止进程：kill"><a href="#2-3-4-终止进程：kill" class="headerlink" title="2.3.4 终止进程：kill"></a>2.3.4 终止进程：kill</h4><p><strong><em>kill PID</em></strong>：PID就是查看到的进程号</p>
+<ul>
+<li><code>-9</code>：强制杀死进程</li>
+</ul>
+<h4 id="2-3-5-后台执行：-、jobs、fg"><a href="#2-3-5-后台执行：-、jobs、fg" class="headerlink" title="2.3.5 后台执行：$、jobs、fg"></a>2.3.5 后台执行：$、jobs、fg</h4><p>在执行的命令后面加上一个<code>$</code> 符号之后，程序会在后台执行，终端依旧可以使用</p>
+<p>在执行过程中也可以使用快捷键<code>ctrl+z</code> 切换到后台执行，使用<strong><em>jobs</em></strong>命令可以查看后台正在运行的程序，使用<strong><em>fg id</em></strong> 可以重新打开后台命令，其中<code>id</code>指的是使用<code>jobs</code>查看到的后台程序前的id</p>
+<h4 id="2-3-6-查看大小命令：df、du"><a href="#2-3-6-查看大小命令：df、du" class="headerlink" title="2.3.6 查看大小命令：df、du"></a>2.3.6 查看大小命令：df、du</h4><ul>
+<li><p><code>df pathname</code>：查看目录所挂载分区的目录的使用情况</p>
+</li>
+<li><p><code>du pathname</code>：查看目录、文件所占用的磁盘空间</p>
+</li>
+<li><p><code>-h</code>：以更人性化的方式查找</p>
+</li>
+</ul>
+<h4 id="2-3-7-查看或配置网络信息：ifconfig"><a href="#2-3-7-查看或配置网络信息：ifconfig" class="headerlink" title="2.3.7 查看或配置网络信息：ifconfig"></a>2.3.7 查看或配置网络信息：ifconfig</h4><p>使用<code>ifconfig</code> 能够查看一些本机的网络信息，当然，一些修改一些网络配置可能也需要使用此命令</p>
+<h4 id="2-3-8-ping"><a href="#2-3-8-ping" class="headerlink" title="2.3.8 ping"></a>2.3.8 ping</h4><p>这个命令和Windows中的ping命令是一样的，能够ping通表示能够给对方发送信息，但不代表对方能给你发送信息，要相互能给ping通才可以双向通信</p>
+<h4 id="2-3-9-挂载、卸载：mount-umount"><a href="#2-3-9-挂载、卸载：mount-umount" class="headerlink" title="2.3.9 挂载、卸载：mount umount"></a>2.3.9 挂载、卸载：mount umount</h4><p>挂载U盘命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mount deviceName dirName</span><br></pre></td></tr></table></figure>
+
+<p>卸载目录命令，但是卸载时你不能在你那个目录中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo umount dirName</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="3-Ubuntu"><a href="#3-Ubuntu" class="headerlink" title="3. Ubuntu"></a>3. Ubuntu</h2><h4 id="3-1-软件"><a href="#3-1-软件" class="headerlink" title="3.1 软件"></a>3.1 软件</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install software  <span class="comment">#下载</span></span><br><span class="line">sudo apt-get remove software <span class="comment">#移除</span></span><br><span class="line">sudo apt-get update <span class="comment">#更新软件列表</span></span><br><span class="line">sudo apt-get clean <span class="comment">#清理所有安装包</span></span><br><span class="line">sudo apt-get upgrade <span class="comment">#更新软件</span></span><br></pre></td></tr></table></figure>
+
+<p>deb包安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg -i *.deb	<span class="comment">#安装</span></span><br><span class="line">sudo dpkg -r sublime-text <span class="comment">#卸载</span></span><br></pre></td></tr></table></figure>
+
+<p>源码安装：看readme文件一般可以找到安装方法</p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2019/09/08/Linux-%E5%91%BD%E4%BB%A4/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2019/09/13/vim%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            vim基本操作
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2019/09/03/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Linux文件系统</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2019-2020
+        Wendell
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Wendell"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/WarlockWendell" target="_blank" rel="noopener">github</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['面朝大海，春暖花开','',''],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: false,
+    backSpeed: 100000000000,
+    showCursor: false
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Verilog语法(1) |  Wendell
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon2.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-Verilog语法(1)" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Verilog语法(1)
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/01/15/Verilog%E8%AF%AD%E6%B3%95(1)/" class="article-date">
+  <time datetime="2020-01-15T05:51:22.000Z" itemprop="datePublished">2020-01-15</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>之前记录的Verilog语法规则在电脑系统崩掉之后重装时全部丢失了，所以这里重新记录一下Verilog的基础语法以及在实战中的一些运用方法。</p>
+<a id="more"></a>
+
+<h1 id="1-电路设计的语法"><a href="#1-电路设计的语法" class="headerlink" title="1. 电路设计的语法"></a>1. 电路设计的语法</h1><h2 id="1-1-设计不使用的语法"><a href="#1-1-设计不使用的语法" class="headerlink" title="1.1 设计不使用的语法"></a>1.1 设计不使用的语法</h2><ul>
+<li><code>initial</code>：设计时不使用，仿真时使用</li>
+<li><code>task/function</code>：设计时不使用，仿真时很少用</li>
+<li><code>for/while/repeat/forever</code>：设计不用，仿真很少用</li>
+<li><code>integer</code>：设计不用</li>
+<li>模块内部不能有X态、Z态，内部不能有三态接口</li>
+<li><code>casex/casez</code>：设计和仿真都不用</li>
+<li><code>force/wait/fork</code>：设计不用，仿真很少用</li>
+<li><code>#5</code>：延时语句，设计不用，仿真常用</li>
+</ul>
+<h2 id="1-2-设计时使用的语法"><a href="#1-2-设计时使用的语法" class="headerlink" title="1.2 设计时使用的语法"></a>1.2 设计时使用的语法</h2><ul>
+<li><code>reg/wire、parameter</code>：定义参数的语法</li>
+<li><code>assign、always</code>：很常用的语法</li>
+<li>一般只用<code>if else</code>和<code>case</code> 两种条件语句</li>
+<li><code>+、-、*、/、%</code>：算术运算符可以使用</li>
+<li><code>=，&lt;=</code>：赋值运算符，时序逻辑用<code>&lt;=</code>，组合逻辑用<code>=</code></li>
+<li>关系运算符：<code>&gt;，&lt;，&gt;=，&lt;=</code></li>
+<li>逻辑运算符：<code>&amp;&amp;，||，!</code></li>
+<li>位运算符：<code>~，|，^，&amp;</code></li>
+<li>移位运算符：<code>&lt;&lt;，&gt;&gt;</code></li>
+<li>拼接运算符：<code>{}</code></li>
+</ul>
+<h1 id="2-电路设计的结构"><a href="#2-电路设计的结构" class="headerlink" title="2. 电路设计的结构"></a>2. 电路设计的结构</h1><ul>
+<li><p>组合逻辑：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span> @ (*) <span class="keyword">begin</span></span><br><span class="line">	expression</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>同步复位时序逻辑</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(rst_n == <span class="number">1'b0</span>) <span class="keyword">begin</span></span><br><span class="line">		expression</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">		expression</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>异步复位时序逻辑</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">always</span> @ (<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">negedge</span> rst_n) <span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">if</span>(rst_n == <span class="number">1'b0</span>) <span class="keyword">begin</span></span><br><span class="line">		expression</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">		expression</span><br><span class="line">	<span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="3-电路设计要点"><a href="#3-电路设计要点" class="headerlink" title="3. 电路设计要点"></a>3. 电路设计要点</h1><ul>
+<li>一个<code>always</code> 只产生一个信号：设计清晰简洁方便调试</li>
+<li>一个信号只在一个<code>always</code>中产生</li>
+<li><code>always</code> 模块要考虑到全部的情况</li>
+<li>条件判断只用<code>if else</code>或者<code>case</code></li>
+<li>含有<code>posedge</code>或者<code>negedge</code>的一定是时序电路</li>
+<li>即改即用使用组合逻辑，延时改变使用时序逻辑</li>
+</ul>
+<h1 id="4-模块例化"><a href="#4-模块例化" class="headerlink" title="4.模块例化"></a>4.模块例化</h1><p>例化可以简单理解为编程语言中的函数功能（但是实际上并不一样），当有一个模块被例化两次之后，这两个模块都占有实际的电路结构，虽然这两个功能都有相同的功能，并不会共用一套电路，编程语言中的函数是随用随分配，这是例化和函数的一个区别</p>
+<ul>
+<li><p>例化的方法：</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设计模块</span></span><br><span class="line"><span class="keyword">module</span> uart(</span><br><span class="line">	clk,</span><br><span class="line">	rst_n,</span><br><span class="line">	vld_in,</span><br><span class="line">	data_in,</span><br><span class="line">	uart_out,</span><br><span class="line">	uart_in,</span><br><span class="line">	vld_out,</span><br><span class="line">	data_out,</span><br><span class="line">	rdy_in</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">//例化方法：  </span></span><br><span class="line">uart u1(                <span class="comment">//例化的模块名，实例的模块名</span></span><br><span class="line">	<span class="variable">.clk</span>(clk_100M),</span><br><span class="line">	<span class="variable">.rst_n</span>(sys_rst_n),</span><br><span class="line">	<span class="variable">.vld_in</span>(bt_data_out_vld),</span><br><span class="line">	<span class="variable">.data_in</span>(bt_data_out),</span><br><span class="line">	<span class="variable">.uart_out</span>(uart_tx),</span><br><span class="line">	<span class="variable">.uart_in</span>(uart_rx),</span><br><span class="line">	<span class="variable">.vld_out</span>(uart_data_out_vld),</span><br><span class="line">	<span class="variable">.data_out</span>(uart_data_out),</span><br><span class="line">	<span class="variable">.rdy_in</span>(uart_in_rdy)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>参数的例化</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设计模块</span></span><br><span class="line"><span class="keyword">module</span> uart(</span><br><span class="line">	clk,</span><br><span class="line">	rst_n,</span><br><span class="line">	vld_in,</span><br><span class="line">	data_in,</span><br><span class="line">	uart_out,</span><br><span class="line">	uart_in,</span><br><span class="line">	vld_out,</span><br><span class="line">	data_out,</span><br><span class="line">	rdy_in</span><br><span class="line">);</span><br><span class="line"><span class="keyword">parameter</span> DATA_W = <span class="number">8</span>;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="comment">//例化方法：  </span></span><br><span class="line">    uart<span class="variable">#(.DATA_W(16))</span> u1(                <span class="comment">//例化的模块名，实例的模块名,这里将模块的8位位宽改成了16位的位宽</span></span><br><span class="line">	<span class="variable">.clk</span>(clk_100M),</span><br><span class="line">	<span class="variable">.rst_n</span>(sys_rst_n),</span><br><span class="line">	<span class="variable">.vld_in</span>(bt_data_out_vld),</span><br><span class="line">	<span class="variable">.data_in</span>(bt_data_out),</span><br><span class="line">	<span class="variable">.uart_out</span>(uart_tx),</span><br><span class="line">	<span class="variable">.uart_in</span>(uart_rx),</span><br><span class="line">	<span class="variable">.vld_out</span>(uart_data_out_vld),</span><br><span class="line">	<span class="variable">.data_out</span>(uart_data_out),</span><br><span class="line">	<span class="variable">.rdy_in</span>(uart_in_rdy)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="5-运算符"><a href="#5-运算符" class="headerlink" title="5. 运算符"></a>5. 运算符</h1><h2 id="5-1-信号类型reg-wire"><a href="#5-1-信号类型reg-wire" class="headerlink" title="5.1 信号类型reg/wire"></a>5.1 信号类型reg/wire</h2><ul>
+<li>设计代码仅用<code>reg</code>和<code>wire</code></li>
+<li>由本模块且是由<code>always</code>产生的信号，都用<code>reg</code></li>
+<li>测试代码中，用<code>initial</code>产生的信号（一般是对测模块的输入），用<code>reg</code>类型</li>
+<li>其他的都用<code>wire</code></li>
+<li><code>reg</code>类型的信号，也不一定是产生寄存器的（比如组合逻辑中的一些信号，也是由<code>always</code>产生的，也是用<code>reg</code>，但是这里没有寄存器）</li>
+</ul>
+<h2 id="5-2-参数parameter"><a href="#5-2-参数parameter" class="headerlink" title="5.2 参数parameter"></a>5.2 参数parameter</h2><figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">parameter</span> CNT = <span class="number">12</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以简单理解为C语言中的宏定义，例如上述代码的作用就是将整个模块中的<code>CNT</code>全部替换成12</p>
+<h2 id="5-3-算术运算符"><a href="#5-3-算术运算符" class="headerlink" title="5.3 算术运算符"></a>5.3 算术运算符</h2><ul>
+<li><code>+、-、*、/、%</code>：一般除法和取余比较少于，因为它们涉及到的逻辑比较复杂</li>
+</ul>
+<h2 id="5-4-关系运算符"><a href="#5-4-关系运算符" class="headerlink" title="5.4 关系运算符"></a>5.4 关系运算符</h2><p><code>&gt;=，&lt;=，==，&gt;，&lt;</code>：一般用于条件判断</p>
+<h2 id="5-5-赋值运算符"><a href="#5-5-赋值运算符" class="headerlink" title="5.5 赋值运算符"></a>5.5 赋值运算符</h2><ul>
+<li><code>&gt;=</code>：时序逻辑里使用</li>
+<li><code>=</code>：组合逻辑里使用</li>
+</ul>
+<h2 id="5-6-逻辑运算符"><a href="#5-6-逻辑运算符" class="headerlink" title="5.6 逻辑运算符"></a>5.6 逻辑运算符</h2><ul>
+<li><code>&amp;&amp;</code>：与</li>
+<li><code>||</code>：或</li>
+<li><code>!</code>：非</li>
+<li>一般来说两边都是1bit，多用于条件判断</li>
+</ul>
+<h2 id="5-7-位运算符"><a href="#5-7-位运算符" class="headerlink" title="5.7 位运算符"></a>5.7 位运算符</h2><ul>
+<li><code>&amp;</code>：按位与</li>
+<li><code>|</code>：按位或</li>
+<li><code>~</code>：按位取反</li>
+<li><code>^</code>：按位异或</li>
+<li>一般来说用于赋值运算</li>
+</ul>
+<h2 id="5-8-移位运算符"><a href="#5-8-移位运算符" class="headerlink" title="5.8 移位运算符"></a>5.8 移位运算符</h2><ul>
+<li><code>&gt;&gt;</code>：右移</li>
+<li><code>&lt;&lt;</code>：左移</li>
+<li>一般用于乘除运算</li>
+</ul>
+<h2 id="5-9-拼接运算符"><a href="#5-9-拼接运算符" class="headerlink" title="5.9 拼接运算符"></a>5.9 拼接运算符</h2><ul>
+<li><code>{}</code>：将不同bit的数拼接在一起</li>
+<li><code>{3{a[0]}}</code>：表示<code>a[0]a[0]a[0]</code></li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2020/01/15/Verilog%E8%AF%AD%E6%B3%95(1)/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Verilog/" rel="tag">Verilog</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/01/15/git%E5%9F%BA%E7%A1%80/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            git基础
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2019/09/14/Linux%E8%BF%9C%E7%A8%8B%E6%93%8D%E4%BD%9C/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Linux远程操作</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2019-2020
+        Wendell
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Wendell"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/WarlockWendell" target="_blank" rel="noopener">github</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['面朝大海，春暖花开','',''],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: false,
+    backSpeed: 100000000000,
+    showCursor: false
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Verilog语法(3) |  Wendell
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon2.ico" />
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-Verilog语法(3)" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Verilog语法(3)
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/03/01/Verilog%E8%AF%AD%E6%B3%95(3)/" class="article-date">
+  <time datetime="2020-03-01T01:11:00.000Z" itemprop="datePublished">2020-03-01</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.4k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">5分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <p>前面记录了Verilog的设计常用语法、一些不常用的语法，这篇博客记录一些Verilog较为高级的用法</p>
+<a id="more"></a>
+
+<h3 id="时序和延迟"><a href="#时序和延迟" class="headerlink" title="时序和延迟"></a>时序和延迟</h3><ul>
+<li><p>延迟模型：分布延迟，集总延迟、路径延迟（引脚到引脚的延迟）</p>
+<ul>
+<li><p>分布延迟：这个就是前面提到的分布元件上的延迟，比如一个逻辑门上的延迟，延迟可以使用逻辑门调用时的延迟表示，或者用连续赋值时的延迟表示</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> #<span class="number">5</span> a0(out, a, b);</span><br><span class="line"></span><br><span class="line"><span class="keyword">assign</span> #<span class="number">5</span> out = a &amp; b;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>集总延迟：这个就是将一个模块中的延迟全部集中到输出门上，前面的逻辑门不设延迟，表示方法和分布延迟表示类似，只是集总延迟全部表示到输出端上</p>
+</li>
+<li><p>路径延迟：这种延迟是最为常见的，就是表示从每个输入端到输出端的延迟，表示可以使用<code>=&gt;</code> 和<code>*&gt;</code>表示，前者表示单个引脚到引脚的延迟，后者表示源域中任意一个引脚到目标域所有引脚的延迟，延迟要使用在<code>specify  endspecify</code>块中，可以使用<code>specparam</code>参数定义延迟，还可以使用条件延迟语句表示延迟，如下面的例子（这个例子是不对的，只是为了展示多一些功能，实际代码是不能前后矛盾的)</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> top(out , a, b, c, d);</span><br><span class="line"><span class="keyword">input</span> a, b, c, d;</span><br><span class="line"><span class="keyword">output</span> out;</span><br><span class="line"></span><br><span class="line"><span class="keyword">specify</span> </span><br><span class="line">	(a=&gt;out) = <span class="number">9</span>;<span class="comment">/*并行，若是a和out都是[1:0],则这个句子等价于(a[0]=&gt;out[0]) = 9;(a[1]=&gt;out[1]) = 9;*/</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//全连接 </span></span><br><span class="line">	(（a,b,c,d) *&gt; out) = <span class="number">9</span>; <span class="comment">//表示a,b,c,d的每一位到out的每一位的延迟都是9</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">//边沿敏感延迟</span></span><br><span class="line">	(<span class="keyword">posedge</span> clk =&gt; (out +: in)) = (<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line"><span class="comment">/*在clk的上升沿，从clk到out的路径，其上升延时是1，下降延时是2，从in到out的数据路径是同向传输，即out = in，若是-号，则是out = ~in;*/</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//specparam</span></span><br><span class="line">	<span class="keyword">specparam</span>  a_to_out = <span class="number">9</span>;</span><br><span class="line">	(a=&gt;out) = a_to_out;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//条件路径延迟</span></span><br><span class="line">	<span class="keyword">if</span>(a) (a=&gt;out) = <span class="number">9</span>;</span><br><span class="line">	<span class="keyword">if</span>(~a) (a=&gt;out) = <span class="number">11</span>;</span><br><span class="line"><span class="keyword">endspecify</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>路径延迟里的上升、下降、关断延迟</p>
+<p>这一点在前面已经提到过了，这里具体说明一下，延迟值的个数只能是1、2、3、6、12这个5中形式，可以结合最小值:典型值:最大值的方式来使用</p>
+<p>规则是</p>
+<p>1个：所有延迟共用一个延迟值</p>
+<p>2个：上升延迟(0-&gt;z，0-&gt;1，z-&gt;1)，下降延迟(1-&gt;z，z-&gt;0，1-&gt;0)</p>
+<p>3个：上升延迟(0-&gt;1, z-&gt;1)，下降延迟(1-&gt;0, z-&gt;0)，关断延迟(1-&gt;z, 0-&gt;z)</p>
+<p>6个：0-&gt;1, 1-&gt;0, 0-&gt;z, z-&gt;1, 1-&gt;z, z-&gt;0</p>
+<p>12个： 0-&gt;1, 1-&gt;0, 0-&gt;z, z-&gt;1, 1-&gt;z, z-&gt;0, 0-&gt;x, x-&gt;1, 1-&gt;x, x-&gt;0, x-&gt;z, z-&gt;x</p>
+</li>
+<li><p>当没有指定x的路径延迟时，采用最为保守的方式来计算</p>
+<ul>
+<li>当x到已知态的转换消耗的最大时间</li>
+<li>当已知态到x的转换消耗的最小时间</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>时序检查</p>
+<ul>
+<li><p><code>$setup</code>：有效时钟变沿到达之前的最下时间，就是在时钟到来之间要先建立好信号，这个信号需要在时钟到来之前建立好：<code>$setup(data_event, reference_event, limit);</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">specify</span></span><br><span class="line">    $setup(data,<span class="keyword">posedge</span> clk,<span class="number">3</span>); <span class="comment">//data:被检查，posedge clk：参考信号，3:最小时间</span></span><br><span class="line"><span class="keyword">endspecify</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>$hold</code>：保持时间：<code>$hold(reference_event, data_event,limit);</code></p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">specify</span></span><br><span class="line">	$hold(<span class="keyword">posedge</span> rst_n, data, <span class="number">5</span>);</span><br><span class="line"><span class="keyword">endspecify</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>$width</code>：宽度检查：<code>$width(reference_event, limit);</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="用户自定义原语UDP"><a href="#用户自定义原语UDP" class="headerlink" title="用户自定义原语UDP"></a>用户自定义原语UDP</h3><ul>
+<li><p>用户自己定义一个原语，就好像Verilog自带的原语and、or一样，使用方式也是一样的</p>
+</li>
+<li><p>定义方式：</p>
+<ul>
+<li>输出必须在端口第一个，且只能有一个输出，输入可以有多个；输入输出都只能有一位</li>
+<li>时序逻辑UDP需要将输出定义成reg型，且可以使用initial语句赋予初始值</li>
+<li>primitive和module时同级的，定义时需要在module外，但是module可以例化primitive，但是primitive不可以调用任何模块以及其他原语</li>
+<li>状态表的输入只允许是0、1、x，输入z将被认作x</li>
+<li>无关项可以使用？表示</li>
+<li>使用<code>table</code> <code>endtable</code>来写状态，就像数字电路里的真值表，书写的顺序要和前面端口列表里的顺序一致</li>
+</ul>
+<p>实例：逻辑电路</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">primitive</span> mux_4_to_1 (out,i0,i1,i2,i3,s0,s1);</span><br><span class="line"><span class="keyword">output</span> out;</span><br><span class="line"><span class="keyword">input</span> i0, i1, i2, i3, s0, s1;</span><br><span class="line"><span class="keyword">table</span></span><br><span class="line">	<span class="comment">//i0 i1 i2 i3 s0 s1 : out  按定义的顺序</span></span><br><span class="line">	   <span class="number">1</span>  ?  ?  ?  <span class="number">0</span>  <span class="number">0</span> : <span class="number">1</span>;</span><br><span class="line">	   <span class="number">0</span>  ?  ?  ?  <span class="number">0</span>  <span class="number">0</span> : <span class="number">0</span>;</span><br><span class="line">	   ?  <span class="number">1</span>  ?  ?  <span class="number">1</span>  <span class="number">0</span> : <span class="number">1</span>;</span><br><span class="line">       ?  <span class="number">0</span>  ?  ?  <span class="number">1</span>  <span class="number">0</span> : <span class="number">0</span>;</span><br><span class="line">       ?  ?  <span class="number">1</span>  ?  <span class="number">0</span>  <span class="number">1</span> : <span class="number">1</span>;</span><br><span class="line">       ?  ?  <span class="number">0</span>  ?  <span class="number">0</span>  <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">       ?  ?  ?  <span class="number">1</span>  <span class="number">1</span>  <span class="number">1</span> : <span class="number">1</span>;</span><br><span class="line">       ?  ?  ?  <span class="number">0</span>  <span class="number">1</span>  <span class="number">1</span> : <span class="number">0</span>;</span><br><span class="line">       ?  ?  ?  ?  x  ? : x;</span><br><span class="line">       ?  ?  ?  ?  ?  x : x;</span><br><span class="line"><span class="keyword">endtable</span></span><br><span class="line"><span class="keyword">endprimitive</span></span><br></pre></td></tr></table></figure>
+
+<p>实例：时序电路 电平敏感</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">primitive</span> latch(q, d, clk, clear)</span><br><span class="line"><span class="keyword">output</span> q;</span><br><span class="line"><span class="keyword">input</span> d, clk, clear;</span><br><span class="line"><span class="keyword">reg</span> q;</span><br><span class="line"><span class="keyword">initial</span> </span><br><span class="line">    q = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">table</span></span><br><span class="line">    <span class="comment">//  d clk clear :q : q+</span></span><br><span class="line">    	? ?     <span class="number">1</span>   :? : <span class="number">0</span>;</span><br><span class="line">    	<span class="number">1</span> <span class="number">1</span>     <span class="number">0</span>   :? : <span class="number">1</span>;</span><br><span class="line">    	<span class="number">0</span> <span class="number">1</span>     <span class="number">0</span>   :? : <span class="number">0</span>;</span><br><span class="line">    	? <span class="number">0</span>     <span class="number">0</span>   :? : -; <span class="comment">//保持不变</span></span><br><span class="line"><span class="keyword">endtable</span></span><br><span class="line"><span class="keyword">endprimitive</span></span><br></pre></td></tr></table></figure>
+
+<p>实例：时序电路 边沿敏感</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">primitive</span> edge_dff(q, d, clk, clear)</span><br><span class="line">    <span class="keyword">output</span> q;</span><br><span class="line">	<span class="keyword">reg</span> q;</span><br><span class="line">    <span class="keyword">input</span> d, clk, clear;</span><br><span class="line">    <span class="keyword">initial</span> </span><br><span class="line">        q = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">table</span></span><br><span class="line">        ? ? <span class="number">1</span> : ? : <span class="number">0</span>;	<span class="comment">//复位</span></span><br><span class="line">        ? ? (<span class="number">10</span>):?: -;	<span class="comment">//清零跳转不影响</span></span><br><span class="line">        <span class="number">1</span> (<span class="number">10</span>) <span class="number">0</span>:?: <span class="number">1</span>;	<span class="comment">//下降沿锁存1</span></span><br><span class="line">        <span class="number">0</span> (<span class="number">10</span>) <span class="number">0</span>:?: <span class="number">0</span>;	<span class="comment">//下降沿锁存0</span></span><br><span class="line">        ? (<span class="number">1</span>x) <span class="number">0</span>:?: -;	<span class="comment">//由1变为不确定，不变</span></span><br><span class="line">        ? (<span class="number">0</span>?) <span class="number">0</span>:?: -;	<span class="comment">//由0变为不确定，不变</span></span><br><span class="line">        ? (x1) <span class="number">0</span>:?: -;	<span class="comment">//由不确定变1，不变</span></span><br><span class="line">        (??) ? <span class="number">0</span>:?: -;	<span class="comment">//时钟不变的时候，不变</span></span><br><span class="line">    <span class="keyword">endtable</span></span><br><span class="line"><span class="keyword">endprimitive</span></span><br></pre></td></tr></table></figure>
+
+<p>一行里不能有多个跳变的变量</p>
+<ul>
+<li><p>关于跳变，还可以有如下的缩写</p>
+<table>
+<thead>
+<tr>
+<th>缩写</th>
+<th>含义</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>?</td>
+<td>0,1,x</td>
+<td>不可用于输出</td>
+</tr>
+<tr>
+<td>b</td>
+<td>0,1</td>
+<td>不可用于输出</td>
+</tr>
+<tr>
+<td>-</td>
+<td>不变</td>
+<td>只用于输出</td>
+</tr>
+<tr>
+<td>f</td>
+<td>(10)</td>
+<td>下降沿</td>
+</tr>
+<tr>
+<td>r</td>
+<td>(01)</td>
+<td>上升沿</td>
+</tr>
+<tr>
+<td>p</td>
+<td>(0x)、(01)、(x1)</td>
+<td>可能是上升沿</td>
+</tr>
+<tr>
+<td>n</td>
+<td>(1x)、(10)、(x0)</td>
+<td>可能是下降沿</td>
+</tr>
+<tr>
+<td>*</td>
+<td>(??)</td>
+<td>任意变化</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2020/03/01/Verilog%E8%AF%AD%E6%B3%95(3)/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Verilog/" rel="tag">Verilog</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/03/02/python%E8%AF%AD%E6%B3%95/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            python基础语法
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/02/28/Verilog%E8%AF%AD%E6%B3%95(2)/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Verilog语法(2)</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2019-2020
+        Wendell
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Wendell"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/WarlockWendell" target="_blank" rel="noopener">github</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['面朝大海，春暖花开','',''],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: false,
+    backSpeed: 100000000000,
+    showCursor: false
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: true
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.6/unpacked/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>
