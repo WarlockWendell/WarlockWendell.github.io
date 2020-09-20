@@ -6,7 +6,7 @@
     
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    GDB 调试 |  Wendell
+    循环不变式 |  Wendell
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -31,7 +31,7 @@
   <div id="app">
     <main class="content">
       <section class="outer">
-  <article id="post-Gdb调试" class="article article-type-post" itemscope
+  <article id="post-循环不变式" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
@@ -39,7 +39,7 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  GDB 调试
+  循环不变式
 </h1>
   
 
@@ -48,8 +48,8 @@
 
     
     <div class="article-meta">
-      <a href="/2020/07/22/Gdb%E8%B0%83%E8%AF%95/" class="article-date">
-  <time datetime="2020-07-21T16:00:00.000Z" itemprop="datePublished">2020-07-22</time>
+      <a href="/2020/09/20/%E5%BE%AA%E7%8E%AF%E4%B8%8D%E5%8F%98%E5%BC%8F/" class="article-date">
+  <time datetime="2020-09-19T16:00:00.000Z" itemprop="datePublished">2020-09-20</time>
 </a>
       
       
@@ -59,7 +59,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">308字</span>
+            <span class="post-count">380字</span>
         </span>
     </span>
 
@@ -79,8 +79,6 @@
 
     
     
-    <div class="tocbot"></div>
-
 
 
 
@@ -95,50 +93,23 @@
       
 
       
-      <p>本篇博文记录一些GDB的基本使用方法</p>
+      <p>循环不变式式证明算法正确性的一个重要方法，本篇文章将记录一下循环不变式。</p>
 <a id="more"></a>
 
-<p>在使用GDB调试前，首先要生成可执行程序</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc *.c -o app -g</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>-g</code>参数，使生成的可执行程序中包含调试信息</p>
-<p>然后使用<code>dgb app</code>进入调试截面</p>
-<h1 id="1-打断点"><a href="#1-打断点" class="headerlink" title="1. 打断点"></a>1. 打断点</h1><ul>
-<li><p>查看程序源代码</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l</span><br></pre></td></tr></table></figure>
-
-<p>上面的代码查看带<code>main</code>函数的文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">l a.c:20</span><br></pre></td></tr></table></figure>
-
-<p>上面的代码查看<code>a.c</code>函数的第20行内容，行号也可以换成函数名称</p>
-<p>继续使用<code>l</code>就能继续往下看</p>
-</li>
-<li><p>断点</p>
-<p>使用<code>break n</code>在第n行设置断点，这个<code>break</code>可以简写成<code>b</code></p>
-</li>
-<li><p>带有条件的断点</p>
-<p>比如在循环里面，不希望每次都断点</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">b 22 <span class="keyword">if</span> i==10</span><br></pre></td></tr></table></figure>
-
-<p>在<code>i==10</code>时，才会有这个断点</p>
-</li>
-<li><p>使用<code>info b</code>查看断点信息，<code>info</code>可以简写为<code>i</code></p>
-</li>
-<li><p><code>d 编号</code>删除断点</p>
-</li>
+<p>百科里给循环不变式的定义为“每次循环体执行前后均为真的谓词”。最为关键的是找到合适的“断言”。</p>
+<p>要通过这个证明算法的正确性，需要证明三点：</p>
+<ul>
+<li>初始化：循环的第一次迭代开始前，断言为真。</li>
+<li>保持：类似于数学归纳法的第二步，循环的某次迭代之前断言为真，那么循环迭代之后，断言仍为真。</li>
+<li>终止：循环终止时，得到的结果就是自己想要的结果。</li>
 </ul>
-<h1 id="2-执行"><a href="#2-执行" class="headerlink" title="2. 执行"></a>2. 执行</h1><ul>
-<li><code>start</code>执行一步</li>
-<li><code>n</code>单步执行</li>
-<li><code>s</code>单步进入</li>
-<li><code>c</code>继续执行</li>
-<li><code>p i</code>查看<code>i</code>的值</li>
-<li><code>ptype i</code>查看<code>i</code>类型</li>
-<li><code>display i</code> 追踪变量<code>i</code>的值，使用<code>undisplay 编号</code> 不追踪，编号使用<code>info display</code>查看</li>
-<li>进入循环，使用<code>u</code>跳出单次循环 </li>
-<li><code>finish</code>跳出函数</li>
-<li><code>set var i=10</code>将<code>i</code>设置成10</li>
-</ul>
+<p>下面通过一个常见的例子来说明循环不变式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;<span class="built_in">size</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum = sum + a[i];</span><br><span class="line">        i = i + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个十分简答的求和运算，不难得出“sum = 前k个数的和”，这便是断言，下面说明一下断言的正确性。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// M(k) = 0, 此时k = 0，所以初始化成立。</span></span><br><span class="line">    <span class="keyword">while</span>(i&lt;<span class="built_in">size</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum = sum + a[i];</span><br><span class="line">        <span class="comment">// M(k + 1) = 前 k + 1个数的和 = M(k) + a[k]</span></span><br><span class="line">        i = i + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//转换之后，M(k) = 前k个数的和</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> sum; <span class="comment">//求完之后，k = size，即sum等于前size个数的和，确实符合自己想要的结果。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>能用循环不变式验证的算法还有很多的，以后慢慢体会。</p>
 
       
       <!-- reward -->
@@ -204,14 +175,14 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2020/07/22/Gdb%E8%B0%83%E8%AF%95/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://warlockwendell.github.io/2020/09/20/%E5%BE%AA%E7%8E%AF%E4%B8%8D%E5%8F%98%E5%BC%8F/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/" rel="tag">gdb</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Algorithm/" rel="tag">Algorithm</a></li></ul>
 
 
     </footer>
@@ -222,19 +193,10 @@
   
   <nav class="article-nav">
     
-      <a href="/2020/09/20/%E5%BE%AA%E7%8E%AF%E4%B8%8D%E5%8F%98%E5%BC%8F/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            循环不变式
-          
-        </div>
-      </a>
     
-    
-      <a href="/2020/07/21/Linux%20%E5%BA%93%E7%9A%84%E5%88%B6%E4%BD%9C/" class="article-nav-link">
+      <a href="/2020/07/22/Gdb%E8%B0%83%E8%AF%95/" class="article-nav-link">
         <strong class="article-nav-caption">下一篇</strong>
-        <div class="article-nav-title">Linux 库的制作</div>
+        <div class="article-nav-title">GDB 调试</div>
       </a>
     
   </nav>

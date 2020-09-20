@@ -383,7 +383,7 @@
 
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAIN int main()\</span></span><br><span class="line">&#123;\</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">cin</span>.<span class="built_in">get</span>();\</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="3-33-别名"><a href="#3-33-别名" class="headerlink" title="3.33 别名"></a>3.33 别名</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">String</span> = <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">std</span>::<span class="built_in">string</span> Sttring;</span><br></pre></td></tr></table></figure>
+<h2 id="3-33-别名"><a href="#3-33-别名" class="headerlink" title="3.33 别名"></a>3.33 别名</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">String</span> = <span class="built_in">std</span>::<span class="built_in">string</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">std</span>::<span class="built_in">string</span> <span class="keyword">String</span>;</span><br></pre></td></tr></table></figure>
 
 <p>如果变量类型太长，可以使用auto关键字定义变量。</p>
 <h2 id="3-34-std-array"><a href="#3-34-std-array" class="headerlink" title="3.34 std::array"></a>3.34 std::array</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">array</span>&lt;<span class="keyword">int</span>, 5&gt; a;</span><br><span class="line">a.<span class="built_in">size</span>();</span><br></pre></td></tr></table></figure>
@@ -2799,6 +2799,31 @@ print(b)    <span class="comment">#得到b = ['1',2,3]</span>
       <tags>
         <tag>Linux</tag>
         <tag>vim</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>循环不变式</title>
+    <url>/2020/09/20/%E5%BE%AA%E7%8E%AF%E4%B8%8D%E5%8F%98%E5%BC%8F/</url>
+    <content><![CDATA[<p>循环不变式式证明算法正确性的一个重要方法，本篇文章将记录一下循环不变式。</p>
+<a id="more"></a>
+
+<p>百科里给循环不变式的定义为“每次循环体执行前后均为真的谓词”。最为关键的是找到合适的“断言”。</p>
+<p>要通过这个证明算法的正确性，需要证明三点：</p>
+<ul>
+<li>初始化：循环的第一次迭代开始前，断言为真。</li>
+<li>保持：类似于数学归纳法的第二步，循环的某次迭代之前断言为真，那么循环迭代之后，断言仍为真。</li>
+<li>终止：循环终止时，得到的结果就是自己想要的结果。</li>
+</ul>
+<p>下面通过一个常见的例子来说明循环不变式：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;<span class="built_in">size</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum = sum + a[i];</span><br><span class="line">        i = i + <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个十分简答的求和运算，不难得出“sum = 前k个数的和”，这便是断言，下面说明一下断言的正确性。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// M(k) = 0, 此时k = 0，所以初始化成立。</span></span><br><span class="line">    <span class="keyword">while</span>(i&lt;<span class="built_in">size</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        sum = sum + a[i];</span><br><span class="line">        <span class="comment">// M(k + 1) = 前 k + 1个数的和 = M(k) + a[k]</span></span><br><span class="line">        i = i + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//转换之后，M(k) = 前k个数的和</span></span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> sum; <span class="comment">//求完之后，k = size，即sum等于前size个数的和，确实符合自己想要的结果。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>能用循环不变式验证的算法还有很多的，以后慢慢体会。</p>
+]]></content>
+      <tags>
+        <tag>Algorithm</tag>
       </tags>
   </entry>
 </search>
